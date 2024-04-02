@@ -57,12 +57,16 @@ def comparar_imagenes(imagen1, imagen2):
 def handle_message(client, message):
     print(message)
     text = message.caption.split(' ')
-
+    print(text[1])
     if text[1] == "waifu":
 
+        print("descargando")
         app.download_media(message, file_name="./new.jpg")
 
-        if comparar_imagenes("original.jpg", "new.jpg") is False:
+        compara = comparar_imagenes("original.jpg", "new.jpg")
+        print(compara)
+        
+        if compara is False:
             return
 
         # Enviar un mensaje y esperar su finalización

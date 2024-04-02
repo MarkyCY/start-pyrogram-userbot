@@ -9,3 +9,4 @@ env
 my_bot.session-journal
 my_account.session-journal
 my_account.session
+.env

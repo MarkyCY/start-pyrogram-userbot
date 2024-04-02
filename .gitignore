@@ -1,0 +1,11 @@
+carpeta/calvo_db.sql
+*.jpg
+my_bot.session
+
+# Ignore pycache directories
+**/pycache/
+
+env
+my_bot.session-journal
+my_account.session-journal
+my_account.session

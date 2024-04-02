@@ -1,7 +1,6 @@
 carpeta/calvo_db.sql
-*.jpg
 my_bot.session
-
+new.jpg
 # Ignore pycache directories
 **/pycache/
 

@@ -3,9 +3,11 @@ my_bot.session
 new.jpg
 # Ignore pycache directories
 **/pycache/
+/venv
 
 env
 my_bot.session-journal
 my_account.session-journal
 my_account.session
 .env
+Aki.session

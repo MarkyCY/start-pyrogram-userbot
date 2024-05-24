@@ -1,15 +1,19 @@
-from pyrogram import Client, filters
+from pyrogram import Client
+from pyrogram.types import Message
+from pyrogram import filters
 from PIL import Image
 from pyrogram.types import (ReplyKeyboardMarkup ,InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove)
 
-#import asyncio
-import time
+import asyncio
 import os
 
 # Create a new Pyrogram client
 api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN')
+
+from logging import basicConfig, INFO
+basicConfig(format="*%(levelname)s %(message)s", level=INFO, force=True)
 
 app = Client(
     #"my_bot",
@@ -19,7 +23,7 @@ app = Client(
     #bot_token=bot_token,
 )
 
-def comparar_imagenes(imagen1, imagen2):
+async def comparar_imagenes(imagen1, imagen2):
     # Abrir las imágenes
     img1 = Image.open(imagen1)
     img2 = Image.open(imagen2)
@@ -54,33 +58,43 @@ def comparar_imagenes(imagen1, imagen2):
 
 #@app.on_message(filters.photo & filters.private & filters.bot & filters.user(1161908115)) #Megu PV
 @app.on_message(filters.photo & filters.group & filters.bot & filters.user(1733263647))
-def handle_message(client, message):
+async def handle_message(app, message: Message):
     print(message)
     text = message.caption.split(' ')
+    
     print(text[1])
-    if text[1] == "waifu":
 
-        print("descargando")
-        app.download_media(message, file_name="./new.jpg")
+    if text[1] != "waifu":
+        return
 
-        compara = comparar_imagenes("original.jpg", "new.jpg")
-        print(compara)
-        
-        if compara is False:
-            return
+    print("descargando")
+    await app.download_media(message, file_name="./new.jpg")
+     
+    compara = await comparar_imagenes("original.jpg", "new.jpg")
+    print(compara)
+    
+    if compara is False:
+        return
+     
+    # Enviar un mensaje y esperar su finalización
+    await message.reply_text(
+        text="/protecc roxy"
+    )
+     
+    # Esperar un breve tiempo (2 segundos)
+    #await asyncio.sleep(2)
+     
+    # Eliminar el mensaje enviado y esperar su finalización
+    #await client.delete_messages(
+    #    chat_id=msg.chat.id,
+    #    message_ids=msg.id
+    #)
 
-        # Enviar un mensaje y esperar su finalización
-        message.reply_text(
-            text="/protecc roxy"
-        )
+async def main():
+    await app.start()
+    print('*Bot Online.')
 
-        # Esperar un breve tiempo (2 segundos)
-        #time.sleep(2)
-
-        # Eliminar el mensaje enviado y esperar su finalización
-        #client.delete_messages(
-        #    chat_id=msg.chat.id,
-        #    message_ids=msg.id
-        #)
-
-app.run()
+print("Bot Starting")
+loop: asyncio.AbstractEventLoop = asyncio.get_event_loop_policy().get_event_loop()
+loop.create_task(main())
+loop.run_forever()

@@ -60,12 +60,9 @@ async def comparar_imagenes(imagen1, imagen2):
 async def handle_message(app, message: Message):
     text = message.caption.split(' ')
 
-    print(text[1])
-
     if text[1] != "waifu":
         return
 
-    print("descargando")
     await app.download_media(message, file_name="./photo/new.jpg")
     directorio = './photo'
 
@@ -78,9 +75,8 @@ async def handle_message(app, message: Message):
 
         name, ext = os.path.splitext(archivo)
 
-        origin = f"{directorio}/{name}.{ext}"
+        origin = f"{directorio}/{name}{ext}"
         compara = await comparar_imagenes(origin, f"{directorio}/new.jpg")
-        print(compara)
 
         if compara is False:
             continue
@@ -89,6 +85,7 @@ async def handle_message(app, message: Message):
             await message.reply_text(
                 text=f"/protecc {name}"
             )
+            break
      
     # Esperar un breve tiempo (2 segundos)
     #await asyncio.sleep(2)

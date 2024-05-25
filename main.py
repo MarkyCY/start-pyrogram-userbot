@@ -56,30 +56,39 @@ async def comparar_imagenes(imagen1, imagen2):
         return False
 
 
-#@app.on_message(filters.photo & filters.private & filters.bot & filters.user(1161908115)) #Megu PV
 @app.on_message(filters.photo & filters.group & filters.bot & filters.user(1733263647))
 async def handle_message(app, message: Message):
-    print(message)
     text = message.caption.split(' ')
-    
+
     print(text[1])
 
     if text[1] != "waifu":
         return
 
     print("descargando")
-    await app.download_media(message, file_name="./new.jpg")
-     
-    compara = await comparar_imagenes("original.jpg", "new.jpg")
-    print(compara)
-    
-    if compara is False:
-        return
-     
-    # Enviar un mensaje y esperar su finalización
-    await message.reply_text(
-        text="/protecc roxy"
-    )
+    await app.download_media(message, file_name="./photo/new.jpg")
+    directorio = './photo'
+
+    archivos_jpg = [archivo for archivo in os.listdir(directorio) if archivo.lower().endswith('.jpg')]
+
+    for archivo in archivos_jpg:
+        # Verificar si el archivo es el nuevo archivo   
+        if archivo == "new.jpg":
+            continue
+
+        name, ext = os.path.splitext(archivo)
+
+        origin = f"{directorio}/{name}.{ext}"
+        compara = await comparar_imagenes(origin, f"{directorio}/new.jpg")
+        print(compara)
+
+        if compara is False:
+            continue
+        else:
+            # Enviar un mensaje y esperar su finalización
+            await message.reply_text(
+                text=f"/protecc {name}"
+            )
      
     # Esperar un breve tiempo (2 segundos)
     #await asyncio.sleep(2)

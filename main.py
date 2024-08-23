@@ -2,15 +2,17 @@ from pyrogram import Client
 from pyrogram.types import Message
 from pyrogram import filters
 from PIL import Image
-from pyrogram.types import (ReplyKeyboardMarkup ,InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove)
 
 import asyncio
+import aiohttp
+import json
 import os
 
 # Create a new Pyrogram client
 api_id = os.getenv('API_ID')
 api_hash = os.getenv('API_HASH')
 bot_token = os.getenv('BOT_TOKEN')
+SAUCENAO = os.getenv('SAUCENAO')
 
 from logging import basicConfig, INFO
 basicConfig(format="*%(levelname)s %(message)s", level=INFO, force=True)
@@ -22,6 +24,11 @@ app = Client(
     api_hash=api_hash,
     #bot_token=bot_token,
 )
+
+async def async_post_image(url, params, image_path):
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, params=params, data={'file': open(image_path, 'rb')}) as response:
+            return await response.text()
 
 async def comparar_imagenes(imagen1, imagen2):
     # Abrir las imágenes
@@ -55,15 +62,41 @@ async def comparar_imagenes(imagen1, imagen2):
     else:
         return False
 
+async def search_sauce(downloaded_file, app, message):
+    url = "https://saucenao.com/search.php"
+    params = {
+        "api_key": "27ff744ccbda26f427711688d7da5513be001afa",
+        "output_type": "2",
+        "testmode": "0"
+    }
+    result = await async_post_image(url, params, downloaded_file)
+    
+    res = json.loads(result)
+
+    if 'results' in res:
+        characters = None
+
+        for i, result in enumerate(res['results']):
+            if 'characters' in result['data']:
+                characters = result['data']['characters']
+                chars = characters.split(' ')
+                for i, char in enumerate(chars):
+                    await message.reply_text(f"/protecc {char}")
+                    break
+                break
 
 @app.on_message(filters.photo & filters.group & filters.bot & filters.user(1733263647))
 async def handle_message(app, message: Message):
-    text = message.caption.split(' ')
+    #text = message.caption.split(' ')
+    chat_id = message.chat.id
 
-    if text[1] != "waifu":
-        return
+    #if text[1] != "waifu":
+    #    return
 
-    await app.download_media(message, file_name="./photo/new.jpg")
+    downloaded_file = await app.download_media(message, file_name="./photo/new.jpg")
+
+    await search_sauce(downloaded_file, app, message)
+
     directorio = './photo'
 
     archivos_jpg = [archivo for archivo in os.listdir(directorio) if archivo.lower().endswith('.jpg')]

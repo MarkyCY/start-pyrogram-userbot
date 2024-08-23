@@ -1,3 +1,4 @@
 pyrotgfork
 tgcrypto
 Pillow
+aiohttp

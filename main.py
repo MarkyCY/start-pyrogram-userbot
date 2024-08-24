@@ -2,6 +2,8 @@ from pyrogram import Client
 from pyrogram.types import Message
 from pyrogram import filters
 from PIL import Image
+from dotenv import load_dotenv
+load_dotenv()
 
 import asyncio
 import aiohttp
@@ -65,7 +67,7 @@ async def comparar_imagenes(imagen1, imagen2):
 async def search_sauce(downloaded_file, app, message):
     url = "https://saucenao.com/search.php"
     params = {
-        "api_key": "27ff744ccbda26f427711688d7da5513be001afa",
+        "api_key": SAUCENAO,
         "output_type": "2",
         "testmode": "0"
     }
@@ -81,6 +83,10 @@ async def search_sauce(downloaded_file, app, message):
                 characters = result['data']['characters']
                 chars = characters.split(' ')
                 for i, char in enumerate(chars):
+                    
+                    if char == "" or char == " ":
+                        continue
+
                     await message.reply_text(f"/protecc {char}")
                     break
                 break

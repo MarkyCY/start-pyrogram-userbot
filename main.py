@@ -27,6 +27,9 @@ app = Client(
     #bot_token=bot_token,
 )
 
+async def progress(current, total):
+    print(f"{current * 100 / total:.1f}%")
+
 async def async_post_image(url, params, image_path):
     async with aiohttp.ClientSession() as session:
         async with session.post(url, params=params, data={'file': open(image_path, 'rb')}) as response:
@@ -74,6 +77,7 @@ async def search_sauce(downloaded_file, app, message):
     result = await async_post_image(url, params, downloaded_file)
     
     res = json.loads(result)
+    print("Respuesta recibida:")
 
     if 'results' in res:
         characters = None
@@ -86,20 +90,20 @@ async def search_sauce(downloaded_file, app, message):
                     
                     if char == "" or char == " ":
                         continue
-
+                    print(f"/protecc {char}")
                     await message.reply_text(f"/protecc {char}")
                     break
                 break
 
 @app.on_message(filters.photo & filters.group & filters.bot & filters.user(1733263647))
 async def handle_message(app, message: Message):
-    #text = message.caption.split(' ')
+    text = message.caption.split(' ')
     chat_id = message.chat.id
 
-    #if text[1] != "waifu":
-    #    return
+    if text[1] != "waifu":
+        return
 
-    downloaded_file = await app.download_media(message, file_name="./photo/new.jpg")
+    downloaded_file = await app.download_media(message, file_name="./photo/new.jpg", progress=progress)
 
     await search_sauce(downloaded_file, app, message)
 
